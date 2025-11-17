@@ -1,10 +1,6 @@
--- ============================================================
--- EX2.SQL — Clean, Simplified, BCNF-Compliant Database
--- ============================================================
+-- EX2.SQL 
 USE WildlifeTravelDB;
--- ============================================================
--- DROP TABLES IN REVERSE DEPENDENCY ORDER
--- ============================================================
+
 DROP TABLE IF EXISTS ReviewPhoto;
 DROP TABLE IF EXISTS Review;
 DROP TABLE IF EXISTS Sighting;
@@ -18,9 +14,8 @@ DROP TABLE IF EXISTS CorporateAccount;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Location;
 
--- ============================================================
+
 -- 1. USER
--- ============================================================
 CREATE TABLE User (
     userEmail VARCHAR(255) PRIMARY KEY,
     phoneNo VARCHAR(20) UNIQUE,
@@ -32,17 +27,14 @@ CREATE TABLE User (
     joinDate DATE
 );
 
--- ============================================================
 -- 2. CORPORATE ACCOUNT
--- ============================================================
 CREATE TABLE CorporateAccount (
     cAccountID INT PRIMARY KEY,
     companyName VARCHAR(255) UNIQUE
 );
 
--- ============================================================
+
 -- 3. TRIP
--- ============================================================
 CREATE TABLE Trip (
     tripID INT PRIMARY KEY,
     userEmail VARCHAR(255), 
@@ -56,9 +48,7 @@ CREATE TABLE Trip (
     FOREIGN KEY (cAccountID) REFERENCES CorporateAccount(cAccountID)
 );
 
--- ============================================================
 -- 4. ITINERARY
--- ============================================================
 CREATE TABLE Itinerary (
     itineraryID INT PRIMARY KEY,
     tripID INT,
@@ -82,9 +72,7 @@ CREATE TABLE ItineraryDailySchedule (
     FOREIGN KEY (itineraryID) REFERENCES Itinerary(itineraryID)
 );
 
--- ============================================================
 -- 5. LOCATION
--- ============================================================
 CREATE TABLE Location (
     locationID INT PRIMARY KEY,
     name VARCHAR(255),
@@ -97,9 +85,7 @@ CREATE TABLE Location (
     UNIQUE(latitude, longitude)
 );
 
--- ============================================================
 -- 6. SPECIES
--- ============================================================
 CREATE TABLE Species (
     speciesID INT PRIMARY KEY,
     specificName VARCHAR(255) UNIQUE,
@@ -116,9 +102,7 @@ CREATE TABLE SpeciesHabitat (
     FOREIGN KEY (speciesID) REFERENCES Species(speciesID)
 );
 
--- ============================================================
 -- 7. SIGHTING
--- ============================================================
 CREATE TABLE Sighting (
     sightingID INT PRIMARY KEY,
     speciesID INT,
@@ -132,9 +116,8 @@ CREATE TABLE Sighting (
     FOREIGN KEY (userEmail) REFERENCES User(userEmail)
 );
 
--- ============================================================
+
 -- 8. REVIEW
--- ============================================================
 CREATE TABLE Review (
     reviewID INT PRIMARY KEY,
     userEmail VARCHAR(255),
