@@ -1,6 +1,6 @@
 -- EX6.SQL — Data Modification Commands
 -- Three non-trivial data modification statements.
-
+SET SQL_SAFE_UPDATES = 0;
 USE WildlifeTravelDB;
 
 -- ============================================================
