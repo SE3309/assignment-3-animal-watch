@@ -1,6 +1,10 @@
--- EX2.SQL 
+-- EX2.SQL — BCNF-Compliant WildlifeTravelDB Schema
+
 USE WildlifeTravelDB;
 
+-- ============================================================
+-- DROP TABLES IN REVERSE DEPENDENCY ORDER
+-- ============================================================
 DROP TABLE IF EXISTS ReviewPhoto;
 DROP TABLE IF EXISTS Review;
 DROP TABLE IF EXISTS Sighting;
@@ -14,44 +18,50 @@ DROP TABLE IF EXISTS CorporateAccount;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Location;
 
-
+-- ============================================================
 -- 1. USER
+-- ============================================================
 CREATE TABLE User (
-    userEmail VARCHAR(255) PRIMARY KEY,
-    phoneNo VARCHAR(20) UNIQUE,
-    firstName VARCHAR(100),
-    lastName VARCHAR(100),
-    password VARCHAR(255),
-    dateOfBirth DATE,
-    country VARCHAR(100),
-    joinDate DATE
+    userEmail    VARCHAR(255) PRIMARY KEY,
+    phoneNo      VARCHAR(20) UNIQUE,
+    firstName    VARCHAR(100),
+    lastName     VARCHAR(100),
+    password     VARCHAR(255),
+    dateOfBirth  DATE,
+    country      VARCHAR(100),
+    joinDate     DATE
 );
 
+-- ============================================================
 -- 2. CORPORATE ACCOUNT
+-- ============================================================
 CREATE TABLE CorporateAccount (
-    cAccountID INT PRIMARY KEY,
+    cAccountID  INT PRIMARY KEY,
     companyName VARCHAR(255) UNIQUE
 );
 
-
+-- ============================================================
 -- 3. TRIP
+-- ============================================================
 CREATE TABLE Trip (
-    tripID INT PRIMARY KEY,
-    userEmail VARCHAR(255), 
-    cAccountID INT,
-    tripName VARCHAR(255),
+    tripID      INT PRIMARY KEY,
+    userEmail   VARCHAR(255) NOT NULL,
+    cAccountID  INT,
+    tripName    VARCHAR(255),
     destination VARCHAR(255),
-    startDate DATE,
-    endDate DATE,
-    budget DECIMAL(10,2),
-    FOREIGN KEY (userEmail) REFERENCES User(userEmail),
+    startDate   DATE,
+    endDate     DATE,
+    budget      DECIMAL(10,2),
+    FOREIGN KEY (userEmail)  REFERENCES User(userEmail),
     FOREIGN KEY (cAccountID) REFERENCES CorporateAccount(cAccountID)
 );
 
+-- ============================================================
 -- 4. ITINERARY
+-- ============================================================
 CREATE TABLE Itinerary (
     itineraryID INT PRIMARY KEY,
-    tripID INT,
+    tripID      INT NOT NULL,
     FOREIGN KEY (tripID) REFERENCES Trip(tripID)
 );
 
@@ -66,67 +76,74 @@ CREATE TABLE ItineraryDestination (
 -- Daily schedule per itinerary
 CREATE TABLE ItineraryDailySchedule (
     itineraryID INT,
-    dayNumber INT,
-    activity VARCHAR(500),
+    dayNumber   INT,
+    activity    VARCHAR(500),
     PRIMARY KEY (itineraryID, dayNumber),
     FOREIGN KEY (itineraryID) REFERENCES Itinerary(itineraryID)
 );
 
+-- ============================================================
 -- 5. LOCATION
+-- ============================================================
 CREATE TABLE Location (
-    locationID INT PRIMARY KEY,
-    name VARCHAR(255),
-    region VARCHAR(255),
-    entryFee DECIMAL(10,2),
-    latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
-    type VARCHAR(100),
+    locationID  INT PRIMARY KEY,
+    name        VARCHAR(255),
+    region      VARCHAR(255),
+    entryFee    DECIMAL(10,2),
+    latitude    DECIMAL(9,6),
+    longitude   DECIMAL(9,6),
+    type        VARCHAR(100),
     description TEXT,
     UNIQUE(latitude, longitude)
 );
 
+-- ============================================================
 -- 6. SPECIES
+-- ============================================================
 CREATE TABLE Species (
-    speciesID INT PRIMARY KEY,
-    specificName VARCHAR(255) UNIQUE,
-    commonName VARCHAR(255),
+    speciesID          INT PRIMARY KEY,
+    specificName       VARCHAR(255) UNIQUE,
+    commonName         VARCHAR(255),
     conservationStatus VARCHAR(100),
-    description TEXT
+    description        TEXT
 );
 
--- Habitat (the only meaningful multi-valued species attribute you kept)
+-- Habitat (multi-valued attribute for Species)
 CREATE TABLE SpeciesHabitat (
     speciesID INT,
-    habitat VARCHAR(255),
+    habitat   VARCHAR(255),
     PRIMARY KEY (speciesID, habitat),
     FOREIGN KEY (speciesID) REFERENCES Species(speciesID)
 );
 
+-- ============================================================
 -- 7. SIGHTING
+-- ============================================================
 CREATE TABLE Sighting (
     sightingID INT PRIMARY KEY,
-    speciesID INT,
-    locationID INT,
-    itineraryID INT,
+    speciesID  INT NOT NULL,
+    locationID INT NOT NULL,
+    itineraryID INT NOT NULL,
     observedAt DATETIME,
-    userEmail VARCHAR(255),
-    FOREIGN KEY (speciesID) REFERENCES Species(speciesID),
+    userEmail  VARCHAR(255) NOT NULL,
+    FOREIGN KEY (speciesID)  REFERENCES Species(speciesID),
     FOREIGN KEY (locationID) REFERENCES Location(locationID),
     FOREIGN KEY (itineraryID) REFERENCES Itinerary(itineraryID),
-    FOREIGN KEY (userEmail) REFERENCES User(userEmail)
+    FOREIGN KEY (userEmail)  REFERENCES User(userEmail)
 );
 
-
+-- ============================================================
 -- 8. REVIEW
+-- ============================================================
 CREATE TABLE Review (
-    reviewID INT PRIMARY KEY,
-    userEmail VARCHAR(255),
-    locationID INT,
-    rating INT,
-    reviewText TEXT,
-    datePosted DATE,
+    reviewID     INT PRIMARY KEY,
+    userEmail    VARCHAR(255) NOT NULL,
+    locationID   INT NOT NULL,
+    rating       INT,
+    reviewText   TEXT,
+    datePosted   DATE,
     helpfulCount INT,
-    FOREIGN KEY (userEmail) REFERENCES User(userEmail),
+    FOREIGN KEY (userEmail)  REFERENCES User(userEmail),
     FOREIGN KEY (locationID) REFERENCES Location(locationID)
 );
 
@@ -139,8 +156,19 @@ CREATE TABLE ReviewPhoto (
     FOREIGN KEY (reviewID) REFERENCES Review(reviewID)
 );
 
+-- ============================================================
+-- DESCRIBE ALL RELATIONS (for screenshots in report)
+-- ============================================================
 DESCRIBE User;
+DESCRIBE CorporateAccount;
 DESCRIBE Trip;
+DESCRIBE Itinerary;
+DESCRIBE ItineraryDestination;
+DESCRIBE ItineraryDailySchedule;
 DESCRIBE Location;
+DESCRIBE Species;
+DESCRIBE SpeciesHabitat;
 DESCRIBE Sighting;
+DESCRIBE Review;
+
 
