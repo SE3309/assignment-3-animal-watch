@@ -1,17 +1,13 @@
--- ============================================================
+
 -- EX5.SQL — SELECT QUERIES FOR ASSIGNMENT 3
--- ============================================================
 -- Contains seven SELECT–FROM–WHERE queries.
 -- Six queries use advanced SQL features (joins, GROUP BY,
 -- subqueries, EXISTS, nested subqueries).
 -- One query is intentionally simple as permitted by instructions.
--- ============================================================
 
 
--- ============================================================
 -- Query 1 (Simple Query)
 -- List all trips starting after July 1, 2024.
--- ============================================================
 SELECT tripID, tripName, destination, startDate
 FROM Trip
 WHERE startDate > '2024-07-01';
@@ -32,12 +28,8 @@ JOIN Species Sp ON S.speciesID = Sp.speciesID
 JOIN Location L ON S.locationID = L.locationID
 WHERE S.observedAt IS NOT NULL;
 
-
-
--- ============================================================
 -- Query 3 (Subquery using IN)
 -- List users who have written at least one review.
--- ============================================================
 SELECT userEmail, firstName, lastName
 FROM User
 WHERE userEmail IN (
@@ -45,12 +37,8 @@ WHERE userEmail IN (
     FROM Review
 );
 
-
-
--- ============================================================
 -- Query 4 (EXISTS)
 -- Show locations that have at least one recorded sighting.
--- ============================================================
 SELECT L.locationID, L.name, L.region
 FROM Location L
 WHERE EXISTS (
@@ -60,11 +48,8 @@ WHERE EXISTS (
 );
 
 
-
--- ============================================================
 -- Query 5 (GROUP BY + HAVING)
 -- Count reviews per location; show only those with >1 review.
--- ============================================================
 SELECT L.locationID, L.name,
        COUNT(R.reviewID) AS reviewCount
 FROM Location L
@@ -73,11 +58,9 @@ GROUP BY L.locationID, L.name
 HAVING COUNT(R.reviewID) > 1;
 
 
-
--- ============================================================
+USE WildLifeTravelDB;
 -- Query 6 (Nested Subqueries + Aggregation)
 -- Show species with more sightings than the average species.
--- ============================================================
 SELECT Sp.speciesID, Sp.commonName
 FROM Species Sp
 WHERE (
@@ -96,10 +79,8 @@ WHERE (
 
 
 
--- ============================================================
 -- Query 7 (JOIN + GROUP BY)
 -- Show each user and the number of corporate-backed trips they took.
--- ============================================================
 SELECT U.userEmail, U.firstName, U.lastName,
        COUNT(T.tripID) AS totalTrips
 FROM User U
